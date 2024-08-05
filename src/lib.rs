@@ -56,7 +56,11 @@ impl Worker {
             // so will wait until a job comes through.
             // N.B. the mutex automatically unlocks again after the MutexGuard<> returned
             // by Mutex.lock() goes out of scope, in this case we call recv() immediately
-            // on the wrapped Receiver & the guard is returned before processing the job. 
+            // on the wrapped Receiver & the guard is returned before processing the job.
+            // N.B. above works as 'let' drops any temporary value used in the expression
+            // on the right hand side immediately when the statement ends. If we had used
+            // 'if let' or 'while let' or 'match', temporary values would only be dropped
+            // at the end of the associated block, keeping the Mutex locked.
             let job = receiver.lock().unwrap().recv().unwrap();
 
             println!("Worker {id} got a job; executing.");
